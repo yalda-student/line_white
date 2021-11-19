@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:line_white_signup_mobile/constants.dart';
 import 'package:line_white_signup_mobile/screen/login_screen.dart';
+import 'package:line_white_signup_mobile/screen/main_screen.dart';
 import 'package:line_white_signup_mobile/screen/signup_screen.dart';
 import 'screen/home_screen.dart';
-import 'screen/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,7 +25,13 @@ class MyApp extends StatelessWidget {
             headline4:
                 TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
           )),
-      home: const SignupScreen(),
+      home: const HomeScreen(),
+      routes: {
+        HomeScreen.pageRoute: (BuildContext context) => const HomeScreen(),
+        LoginScreen.pageRoute: (BuildContext context) => const LoginScreen(),
+        SignupScreen.pageRoute: (BuildContext context) => const SignupScreen(),
+        MainScreen.pageRoute: (BuildContext context) => const MainScreen(),
+      },
     );
   }
 }

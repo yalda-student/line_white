@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:line_white_signup_mobile/screen/login_screen.dart';
 
 class LoginWidget extends StatelessWidget {
   const LoginWidget({
@@ -22,7 +23,9 @@ class LoginWidget extends StatelessWidget {
                     color: const Color(0xff07079A),
                     decoration: TextDecoration.underline),
               )),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pushNamed(LoginScreen.pageRoute);
+          },
         ),
       ],
     );

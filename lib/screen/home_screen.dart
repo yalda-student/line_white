@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:line_white_signup_mobile/screen/signup_screen.dart';
 import 'package:line_white_signup_mobile/widget/login_widget.dart';
 
 import '../constants.dart';
@@ -7,6 +8,8 @@ import '../widget/login_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  static const String pageRoute = '/home-screen';
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +70,9 @@ class HomeScreen extends StatelessWidget {
               width: 270,
               height: 54,
               child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(SignupScreen.pageRoute);
+                  },
                   child: Text("I'll use email or phone",
                       style: GoogleFonts.poppins(
                         textStyle: Theme.of(context).textTheme.caption,
