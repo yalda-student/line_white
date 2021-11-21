@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
@@ -15,6 +18,23 @@ class _InformationFormState extends State<InformationForm> {
   final _formKey = GlobalKey<FormState>();
   bool usePhoneNumber = false;
 
+  final Map<String, String> _userData = {
+    'email': '',
+    'phoneNumber': '',
+    'password': '',
+  };
+
+  void _saveData() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    _formKey.currentState!.save();
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('user_info', json.encode(_userData));
+
+    // Navigator.of(context).pushReplacementNamed(MainScreen.pageRoute);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -29,6 +49,9 @@ class _InformationFormState extends State<InformationForm> {
                 fillColor: MaterialStateProperty.all(Colors.white),
                 onChanged: (value) {
                   setState(() {
+                    _formKey.currentState!.reset();
+                    _userData['email'] = '';
+                    _userData['phoneNumber'] = '';
                     usePhoneNumber = value!;
                   });
                 },
@@ -39,28 +62,23 @@ class _InformationFormState extends State<InformationForm> {
             ],
           ),
           usePhoneNumber
-              ? const CustomTextField(
-                  label: 'Phone number',
-                  icon: Icons.phone_rounded,
-                  inputType: TextInputType.phone)
-              : const CustomTextField(
-                  label: 'Email',
-                  icon: Icons.email_rounded,
-                  inputType: TextInputType.emailAddress),
+              ? buildCustomTextField(context, 'Phone number',
+                  Icons.phone_rounded, TextInputType.phone)
+              : buildCustomTextField(context, 'Email', Icons.email_rounded,
+                  TextInputType.emailAddress),
           const SizedBox(height: 10),
-          const CustomTextField(
-            label: 'Password',
-            icon: Icons.lock_rounded,
-            inputType: TextInputType.visiblePassword,
-          ),
+          buildCustomTextField(context, 'Password', Icons.lock_rounded,
+              TextInputType.visiblePassword),
           const SizedBox(height: 30),
           SizedBox(
             width: 140,
             height: 40,
             child: ElevatedButton(
-                onPressed: () {},
-                child:
-                    Text(widget.title, style: Theme.of(context).textTheme.caption),
+                onPressed: () {
+                  _saveData();
+                },
+                child: Text(widget.title,
+                    style: Theme.of(context).textTheme.caption),
                 style: ButtonStyle(
                     shadowColor: MaterialStateProperty.all(Colors.black),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -75,56 +93,70 @@ class _InformationFormState extends State<InformationForm> {
       ),
     );
   }
-}
 
-class CustomTextField extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final TextInputType inputType;
-
-  const CustomTextField(
-      {Key? key,
-      required this.label,
-      required this.icon,
-      required this.inputType})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  Container buildCustomTextField(BuildContext context, String label,
+      IconData icon, TextInputType inputType) {
     return Container(
-        width: 280,
-        height: 49,
-        margin: const EdgeInsets.only(bottom: 10),
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(25)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Icon(icon, color: AppConsts.primaryColor),
-            const Padding(
-              padding: EdgeInsets.only(top: 8.0, bottom: 8),
-              child: VerticalDivider(
-                color: AppConsts.seconaryTextColor,
-                width: 10,
-              ),
+      width: 280,
+      height: 50,
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(25)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Icon(icon, color: AppConsts.primaryColor),
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0, bottom: 8),
+            child: VerticalDivider(
+              color: AppConsts.seconaryTextColor,
+              width: 10,
             ),
-            SizedBox(
-              width: 200,
-              child: TextFormField(
-                keyboardType: inputType,
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    label: Text(
-                      label,
-                      style: GoogleFonts.poppins(
-                          textStyle: Theme.of(context)
-                              .textTheme
-                              .caption!
-                              .copyWith(color: AppConsts.seconaryTextColor)),
-                    )),
-              ),
+          ),
+          SizedBox(
+            width: 200,
+            child: TextFormField(
+              keyboardType: inputType,
+              obscureText: label == 'Password' ? true : false,
+              decoration: InputDecoration(
+                  border: InputBorder.none,
+                  label: Text(
+                    label,
+                    style: GoogleFonts.poppins(
+                        textStyle: Theme.of(context)
+                            .textTheme
+                            .caption!
+                            .copyWith(color: AppConsts.seconaryTextColor)),
+                  )),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Fill the box!';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                saveValue(value, label);
+              },
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
+  }
+
+  void saveValue(String? value, String label) {
+    switch (label) {
+      case 'Phone number':
+        _userData['phoneNumber'] = value!;
+        break;
+
+      case 'Email':
+        _userData['email'] = value!;
+        break;
+
+      case 'Password':
+        _userData['password'] = value!;
+        break;
+    }
   }
 }

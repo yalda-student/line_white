@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:line_white_signup_mobile/constants.dart';
 import 'package:line_white_signup_mobile/widget/information_widget.dart';
 import 'package:line_white_signup_mobile/widget/login_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -105,8 +106,12 @@ class _ProfileWidgetState extends State<_ProfileWidget> {
                   final XFile? image =
                       await _picker.pickImage(source: ImageSource.gallery);
 
+                  final prefs = await SharedPreferences.getInstance();
+                  var userProfile = image!.path;
+                  prefs.setString('user_img', userProfile);
+
                   setState(() {
-                    _imageFile = File(image!.path);
+                    _imageFile = File(image.path);
                   });
                 },
               ),
