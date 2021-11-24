@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:line_white_signup_mobile/screen/signup_screen.dart';
 import 'package:line_white_signup_mobile/widget/login_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 import '../widget/login_widget.dart';
@@ -16,81 +19,85 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppConsts.primaryColor,
       body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              AppConsts.logoPath,
-              width: 120,
-              height: 120,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Text(
-              'Sign Up',
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(AppConsts.logoPath, width: 120, height: 120),
+              const SizedBox(height: 20),
+              Text('Sign Up',
+                  style: GoogleFonts.poppins(
+                      textStyle: Theme.of(context).textTheme.headline4)),
+              Text("It's easier to sign up now",
+                  style: GoogleFonts.poppins(
+                      textStyle: Theme.of(context).textTheme.caption)),
+              const SizedBox(height: 50),
+              const _FacebookLoginButton(),
+              const SizedBox(height: 20),
+              const _SignupButton(),
+              const SizedBox(height: 20),
+              const SocialMediaWidget(),
+              const LoginWidget()
+            ],
+          )),
+    );
+  }
+}
+
+class _SignupButton extends StatelessWidget {
+  const _SignupButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 270,
+      height: 54,
+      child: TextButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed(SignupScreen.pageRoute);
+          },
+          child: Text("I'll use email or phone",
               style: GoogleFonts.poppins(
-                  textStyle: Theme.of(context).textTheme.headline4),
-            ),
-            Text(
-              "It's easier to sign up now",
-              style: GoogleFonts.poppins(
-                  textStyle: Theme.of(context).textTheme.caption),
-            ),
-            const SizedBox(
-              height: 50,
-            ),
-            SizedBox(
-              width: 270,
-              height: 54,
-              child: ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: Image.asset(
-                    '${AppConsts.rootPath}facebook.png',
-                  ),
-                  label: Text('Continue with Facebook',
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption!
-                          .copyWith(color: AppConsts.primaryColor)),
-                  style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              side: const BorderSide(color: Colors.white))),
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.white))),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            SizedBox(
-              width: 270,
-              height: 54,
-              child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(SignupScreen.pageRoute);
-                  },
-                  child: Text("I'll use email or phone",
-                      style: GoogleFonts.poppins(
-                        textStyle: Theme.of(context).textTheme.caption,
-                      )),
-                  style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              side: const BorderSide(color: Colors.white))))),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const SocialMediaWidget(),
-            const LoginWidget()
-          ],
-        ),
-      ),
+                textStyle: Theme.of(context).textTheme.caption,
+              )),
+          style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      side: const BorderSide(color: Colors.white))))),
+    );
+  }
+}
+
+class _FacebookLoginButton extends StatelessWidget {
+  const _FacebookLoginButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 270,
+      height: 54,
+      child: ElevatedButton.icon(
+          onPressed: () {},
+          icon: Image.asset(
+            '${AppConsts.rootPath}facebook.png',
+          ),
+          label: Text('Continue with Facebook',
+              style: Theme.of(context)
+                  .textTheme
+                  .caption!
+                  .copyWith(color: AppConsts.primaryColor)),
+          style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      side: const BorderSide(color: Colors.white))),
+              backgroundColor: MaterialStateProperty.all(Colors.white))),
     );
   }
 }

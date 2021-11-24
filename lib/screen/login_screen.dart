@@ -53,7 +53,7 @@ class LoginScreen extends StatelessWidget {
               ),
               const Center(
                   child: InformationForm(
-                title: 'Sign In',
+                title: AppConsts.signIn,
               )),
               Center(
                 child: TextButton(

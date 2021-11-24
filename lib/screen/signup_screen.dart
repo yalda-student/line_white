@@ -46,7 +46,7 @@ class SignupScreen extends StatelessWidget {
               ),
               const Center(
                   child: InformationForm(
-                title: 'Sign Up',
+                title: AppConsts.signUp,
               )),
               const Center(child: LoginWidget())
             ],

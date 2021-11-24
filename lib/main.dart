@@ -4,6 +4,7 @@ import 'package:line_white_signup_mobile/constants.dart';
 import 'package:line_white_signup_mobile/screen/login_screen.dart';
 import 'package:line_white_signup_mobile/screen/main_screen.dart';
 import 'package:line_white_signup_mobile/screen/signup_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screen/home_screen.dart';
 
 void main() {
@@ -34,13 +35,28 @@ class MyApp extends StatelessWidget {
             headline4:
                 TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
           )),
-      home: MainScreen(),
+      home: FutureBuilder(
+          future: _autoLogin(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            }
+            if (snapshot.hasData) {
+              return MainScreen();
+            }
+            return const HomeScreen();
+          }),
       routes: {
+        MainScreen.pageRoute: (BuildContext context) => MainScreen(),
         HomeScreen.pageRoute: (BuildContext context) => const HomeScreen(),
         LoginScreen.pageRoute: (BuildContext context) => const LoginScreen(),
         SignupScreen.pageRoute: (BuildContext context) => const SignupScreen(),
-        MainScreen.pageRoute: (BuildContext context) => MainScreen(),
       },
     );
+  }
+
+  Future<String?> _autoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_info');
   }
 }

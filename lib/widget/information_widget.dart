@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:line_white_signup_mobile/screen/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
@@ -18,10 +19,11 @@ class _InformationFormState extends State<InformationForm> {
   final _formKey = GlobalKey<FormState>();
   bool usePhoneNumber = false;
 
-  final Map<String, String> _userData = {
+  final Map<String, dynamic> _userData = {
     'email': '',
     'phoneNumber': '',
     'password': '',
+    'isLoggedIn': false
   };
 
   void _saveData() async {
@@ -29,10 +31,49 @@ class _InformationFormState extends State<InformationForm> {
       return;
     }
     _formKey.currentState!.save();
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('user_info', json.encode(_userData));
 
-    // Navigator.of(context).pushReplacementNamed(MainScreen.pageRoute);
+    final prefs = await SharedPreferences.getInstance();
+    if (widget.title == AppConsts.signUp) {
+      _userData['isLoggedIn'] = true;
+      prefs.setString('user_info', json.encode(_userData));
+
+      Navigator.of(context).pushReplacementNamed(MainScreen.pageRoute);
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getString('user_info') != null) {
+        final userInfo = json.decode(prefs.getString('user_info')!);
+
+        if (authWithEmailAndPass(userInfo['email'], userInfo['password']) ||
+            authWithPhoneAndPass(
+                userInfo['phoneNumber'], userInfo['password'])) {
+          _userData['isLoggedIn'] = true;
+          prefs.setString('user_info', json.encode(_userData));
+          Navigator.of(context).pushReplacementNamed(MainScreen.pageRoute);
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User not found.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  bool authWithEmailAndPass(String email, String password) {
+    if (email == _userData['email'] && password == _userData['password']) {
+      return true;
+    }
+    return false;
+  }
+
+  bool authWithPhoneAndPass(String phone, String password) {
+    if (phone == _userData['phoneNumber'] &&
+        password == _userData['password']) {
+      return true;
+    }
+    return false;
   }
 
   @override
@@ -131,6 +172,9 @@ class _InformationFormState extends State<InformationForm> {
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Fill the box!';
+                }
+                if (label == 'Email' && !value.contains('@')) {
+                  return 'Enter valid email address.';
                 }
                 return null;
               },
